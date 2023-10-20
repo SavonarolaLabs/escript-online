@@ -2,16 +2,11 @@
     import Avatars from "$lib/Avatars.svelte";
     import type monaco from "monaco-editor";
     import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
-    import { createEventDispatcher, onMount } from "svelte";
+    import { onMount } from "svelte";
 
     let editorContainer: HTMLDivElement;
     let monacoEditor: monaco.editor.IStandaloneCodeEditor;
     let Monaco: typeof monaco;
-    let deadline: number;
-    let key: string;
-    let value: string;
-
-    const dispatch = createEventDispatcher();
 
     onMount(async () => {
         self.MonacoEnvironment = {
