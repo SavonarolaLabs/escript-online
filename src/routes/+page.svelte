@@ -309,6 +309,9 @@
         border-bottom-right-radius: 8px;
         overflow: hidden;
         resize: both;
+        -webkit-box-shadow: 0px 0px 81px 5px rgba(0,0,0,0.7);
+        -moz-box-shadow: 0px 0px 81px 5px rgba(0,0,0,0.7);
+        box-shadow: 0px 0px 81px 5px rgba(0,0,0,0.7);
     }
 
     .flex-bg{
