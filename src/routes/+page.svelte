@@ -23,11 +23,13 @@
     let contractAddress = "";
     let compileErrorMessage = "";
 
+    let flexMode = true;
+
     function onCompileClick() {
         const contract = editor.getValue();
         try {
             contractAddress = compileContract(contract, selectedNetwork);
-            compileErrorMessage = ''
+            compileErrorMessage = "";
         } catch (e) {
             contractAddress = "";
             compileErrorMessage = e.message;
@@ -53,6 +55,7 @@
             theme: "vs-dark",
             fontSize: 16,
             automaticLayout: true,
+            //lineNumbers: 'off',
         });
 
         editor.getModel().onDidChangeContent((event) => {
@@ -107,13 +110,44 @@
             );
         }
     }
+
+    function toggleFlex(){
+        if(flexMode){
+            flexMode = false;
+            editor.updateOptions({ lineNumbers: 'on' });
+        }else{
+            flexMode = true;
+            editor.updateOptions({ lineNumbers: 'off' });
+        }
+    }
 </script>
 
 <div class="h-vh">
     <div class="navbar flex justify-between items-center">
         <div class=" text-2xl font-bold p-4">ErgoScript</div>
-        <div class=" pr-2">
+        <div class="flex gap-4 items-center pr-2">
             <!-- <Avatars /> -->
+            <button 
+                on:click={toggleFlex}
+                class="flex items-center px-2 py-1 gray-border" style="border-style:dashed;">
+                flex 
+                <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="ml-2"
+                >
+                    <path
+                        fill-rule="evenodd"
+                        clip-rule="evenodd"
+                        d="M9.77778 21H14.2222C17.3433 21 18.9038 21 20.0248 20.2646C20.51 19.9462 20.9267 19.5371 21.251 19.0607C22 17.9601 22 16.4279 22 13.3636C22 10.2994 22 8.76721 21.251 7.6666C20.9267 7.19014 20.51 6.78104 20.0248 6.46268C19.3044 5.99013 18.4027 5.82123 17.022 5.76086C16.3631 5.76086 15.7959 5.27068 15.6667 4.63636C15.4728 3.68489 14.6219 3 13.6337 3H10.3663C9.37805 3 8.52715 3.68489 8.33333 4.63636C8.20412 5.27068 7.63685 5.76086 6.978 5.76086C5.59733 5.82123 4.69555 5.99013 3.97524 6.46268C3.48995 6.78104 3.07328 7.19014 2.74902 7.6666C2 8.76721 2 10.2994 2 13.3636C2 16.4279 2 17.9601 2.74902 19.0607C3.07328 19.5371 3.48995 19.9462 3.97524 20.2646C5.09624 21 6.65675 21 9.77778 21ZM12 9.27273C9.69881 9.27273 7.83333 11.1043 7.83333 13.3636C7.83333 15.623 9.69881 17.4545 12 17.4545C14.3012 17.4545 16.1667 15.623 16.1667 13.3636C16.1667 11.1043 14.3012 9.27273 12 9.27273ZM12 10.9091C10.6193 10.9091 9.5 12.008 9.5 13.3636C9.5 14.7192 10.6193 15.8182 12 15.8182C13.3807 15.8182 14.5 14.7192 14.5 13.3636C14.5 12.008 13.3807 10.9091 12 10.9091ZM16.7222 10.0909C16.7222 9.63904 17.0953 9.27273 17.5556 9.27273H18.6667C19.1269 9.27273 19.5 9.63904 19.5 10.0909C19.5 10.5428 19.1269 10.9091 18.6667 10.9091H17.5556C17.0953 10.9091 16.7222 10.5428 16.7222 10.0909Z"
+                        fill="#bdbdbd"
+                    />
+                </svg>
+            </button>
+
             <button
                 on:click={createBookmark}
                 class="flex items-center rounded-full px-3 py-1 gray-border"
@@ -132,11 +166,31 @@
             </button>
         </div>
     </div>
-    <div bind:this={editorContainer} class="h-vh w-full" />
-    <div class="footer w-full flex flex-col justify-end rounded-md" style={compileErrorMessage?"height: 40vh;":""}>
+    <div class="h-vh w-full flex flex-col justify-center items-center flex-bg">
+        <div class:editor-flex={flexMode} class="shadow-2xl" class:w-full={!flexMode}>
+            {#if flexMode}
+                <div class="fake-window-header">
+                    <div class="ios-buttons">
+                        <div class="ios-button close"></div>
+                        <div class="ios-button minimize"></div>
+                        <div class="ios-button maximize"></div>
+                    </div>
+                </div>
+            {/if}
+            <div bind:this={editorContainer} class="w-full" class:h-full={flexMode} class:h-vh={!flexMode} />
+        </div>
+    </div>
+    <div
+        class="footer w-full flex flex-col justify-end rounded-md"
+        style={compileErrorMessage ? "height: 40vh;" : ""}
+    >
         {#if compileErrorMessage}
-            <div class="grow p-3 pt-2 text-red-400">{compileErrorMessage}</div>
+            <div class="grow p-3 pt-2 text-red-400 overflow-y-scroll">
+                {compileErrorMessage}
+            </div>
         {/if}
+
+        {#if !flexMode}
         <div class="w-full flex items-center p-2 gap-4">
             <div class="grow">
                 <!-- <input class="code-bar" bind:value={contractAddress}/> -->
@@ -208,10 +262,59 @@
                 <img src="command_line.png" class="w-4" alt="" />
             </button>
         </div>
+        {/if}
     </div>
 </div>
 
 <style>
+    .ios-buttons {
+        display: flex;
+        gap: 5px;
+        padding:0.7em;
+        padding-left: 1em;
+    }
+
+    .ios-button {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: #fff;
+        cursor: pointer;
+    }
+
+    .ios-button.close {
+        background-color: #ff3b30;
+    }
+
+    .ios-button.minimize {
+        background-color: #ffcc00;
+    }
+
+    .ios-button.maximize {
+        background-color: #4cd964;
+    }
+
+
+    .fake-window-header{
+        border-top-left-radius: 6px;
+        border-top-right-radius: 6px;
+        background: #1e1e1e;
+    }
+
+    .editor-flex{
+        height:300px;
+        width: 600px;
+        margin-top:-10%;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+        overflow: hidden;
+        resize: both;
+    }
+
+    .flex-bg{
+        background-color: #4158D0;
+        background-image: linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
+    }
     svg.octicon > path {
         fill: #bdbdbd;
     }
