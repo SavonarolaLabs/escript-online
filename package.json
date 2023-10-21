@@ -25,6 +25,9 @@
 	"type": "module",
 	"dependencies": {
 		"@sveltejs/adapter-static": "^2.0.3",
-		"monaco-editor": "^0.44.0"
+		"monaco-editor": "^0.44.0",
+		"y-monaco": "^0.1.4",
+		"y-webrtc": "^10.2.5",
+		"yjs": "^13.6.8"
 	}
 }
