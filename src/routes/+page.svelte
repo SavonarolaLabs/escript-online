@@ -7,12 +7,28 @@
     import * as Y from "yjs";
     import { WebrtcProvider } from "y-webrtc";
     import { MonacoBinding } from "y-monaco";
+    import { compileContract } from "$lib/compiler";
+
+    import { Network } from "@fleet-sdk/core";
 
     let editorContainer: HTMLDivElement;
-    let monacoEditor: monaco.editor.IStandaloneCodeEditor;
+    let editor: monaco.editor.IStandaloneCodeEditor;
     let Monaco: typeof monaco;
 
     let collabId = "duck";
+
+    let selectedNetwork = Network.Mainnet;
+    let contractAddress = '';
+
+    function onCompileClick() {
+        const contract = editor.getValue();
+        try {
+            contractAddress = compileContract(contract, selectedNetwork);
+        } catch (e) {
+            contractAddress = "";
+            console.log(e.message);
+        }
+    }
 
     onMount(async () => {
         const ydoc = new Y.Doc();
@@ -26,7 +42,7 @@
         };
 
         Monaco = await import("monaco-editor");
-        monacoEditor = Monaco.editor.create(editorContainer, {
+        editor = Monaco.editor.create(editorContainer, {
             value: codeDummy,
             language: "scala",
             minimap: { enabled: false },
@@ -37,11 +53,22 @@
 
         new MonacoBinding(
             ycontent,
-            monacoEditor.getModel(),
-            new Set([monacoEditor]),
+            editor.getModel(),
+            new Set([editor]),
             provider.awareness
         );
+        editor.setValue("sigmaProp(true)\n");
     });
+
+    let copyConfirmation = false;
+
+    function clickCopy(){
+        if (!copyConfirmation){
+            copyConfirmation = true;
+            setTimeout(()=>{copyConfirmation = false;},3000)
+        }
+        navigator.clipboard.writeText(contractAddress);
+    }
 </script>
 
 <div class="h-vh">
@@ -52,18 +79,69 @@
         </div>
     </div>
     <div bind:this={editorContainer} class="h-vh w-full" />
-    <div class="footer w-full flex rounded-md justify-end p-2 gap-4">
+    <div class="footer w-full flex items-center rounded-md p-2 gap-4">
+        <div class="grow">
+            <!-- <input class="code-bar" bind:value={contractAddress}/> -->
+            <div class="flex">
+                <input class="w-full input-monospace" type="text" readonly={true} value={contractAddress}/>
+                <button on:click={clickCopy}>
+                    <div class="h-full copy-btn flex items-center justify-center px-4">
+                        <clipboard-copy
+                            value={contractAddress}
+                            >
+                            {#if !copyConfirmation}
+                            <svg
+                                aria-hidden="true"
+                                height="16"
+                                viewBox="0 0 16 16"
+                                version="1.1"
+                                width="16"
+                                data-view-component="true"
+                                class="octicon"
+                            >
+                                <path
+                                    d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"
+                                /><path
+                                    d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"
+                                />
+                            </svg>
+                            {:else}
+                            <svg
+                                aria-hidden="true"
+                                height="16"
+                                viewBox="0 0 16 16"
+                                version="1.1"
+                                width="16"
+                                data-view-component="true"
+                                class=""
+                            >
+                                <path
+                                    fill="lightgreen"
+                                    d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"
+                                />
+                            </svg>
+                            {/if}
+                            </clipboard-copy
+                        >
+                    </div>
+                </button>
+            </div>
+        </div>
         <select
-            name="cars"
-            id="cars"
+            bind:value={selectedNetwork}
+            name="network"
+            id="network"
             class=" bg-black flex items-center gap-2 m-2 px-3 py-2 custom-select"
             style="  -webkit-appearance: none !important;
 -moz-appearance: none !important;"
         >
-            <option value="volvo">Mainnet</option>
-            <option value="saab">Testnet</option>
+            <option value={Network.Mainnet}>Mainnet</option>
+            <option value={Network.Testnet}>Testnet</option>
         </select>
-        <button class="btn flex items-center gap-2 m-2 px-3 py-2">
+        <button
+            on:click={onCompileClick}
+            class="btn flex items-center gap-2 m-2 px-3 py-2"
+        >
             <img src="command_line.png" class="w-4" alt="" />
             compile</button
         >
@@ -71,8 +149,34 @@
 </div>
 
 <style>
-    select{
-        background: url("data:image/svg+xml;utf8, <svg width='16' height='16' viewBox='0 0 330 330' xmlns='http://www.w3.org/2000/svg'><g><path fill='%23bdbdbd' d='m325.61 229.39-150-150c-2.812-2.813-6.628-4.393-10.606-4.393-3.979 0-7.794 1.581-10.607 4.394l-150 150c-5.858 5.858-5.858 15.355 0 21.213 5.857 5.857 15.355 5.858 21.213 0l139.39-139.39 139.4 139.39c2.929 2.929 6.768 4.393 10.607 4.393s7.678-1.464 10.607-4.394c5.857-5.858 5.857-15.355-1e-3 -21.213z'/></g></svg>") no-repeat;
+    svg.octicon>path{
+        fill:#bdbdbd;
+    }
+    .copy-btn {
+        border: 1px solid rgb(185, 185, 185);
+        border-left: none;
+        border-top-right-radius: 8px;
+        border-bottom-right-radius: 8px;
+    }
+    input{
+        background: rgba(0, 0, 0, 0.436);
+        border: 1px solid rgb(185, 185, 185);
+        border-top-left-radius: 8px;
+        border-bottom-left-radius: 8px;
+        padding-left: 8px;
+        padding-top:5px;
+        padding-bottom:5px;
+        color: #bdbdbd;
+    }
+    .input-monospace{
+        font-family: ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace;
+    }
+    select:focus, input:focus{
+        outline: none;
+    }
+    select {
+        background: url("data:image/svg+xml;utf8, <svg width='16' height='16' viewBox='0 0 330 330' xmlns='http://www.w3.org/2000/svg'><g><path fill='%23bdbdbd' d='m325.61 229.39-150-150c-2.812-2.813-6.628-4.393-10.606-4.393-3.979 0-7.794 1.581-10.607 4.394l-150 150c-5.858 5.858-5.858 15.355 0 21.213 5.857 5.857 15.355 5.858 21.213 0l139.39-139.39 139.4 139.39c2.929 2.929 6.768 4.393 10.607 4.393s7.678-1.464 10.607-4.394c5.857-5.858 5.857-15.355-1e-3 -21.213z'/></g></svg>")
+            no-repeat;
         background-position: 80% 50%;
         padding-right: 44px;
         padding-left: 18px;

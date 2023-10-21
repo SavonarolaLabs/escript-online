@@ -24,6 +24,9 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@fleet-sdk/common": "^0.2.3",
+		"@fleet-sdk/compiler": "^0.2.3",
+		"@fleet-sdk/core": "^0.2.3",
 		"@sveltejs/adapter-static": "^2.0.3",
 		"monaco-editor": "^0.44.0",
 		"y-monaco": "^0.1.4",
