@@ -49,7 +49,9 @@
 
         Monaco = await import("monaco-editor");
         editor = Monaco.editor.create(editorContainer, {
-            value: codeDummy,
+            value: `{
+  proveDlog(CONTEXT.preHeader.minerPk)
+}`,
             language: "scala",
             minimap: { enabled: false },
             theme: "vs-dark",
