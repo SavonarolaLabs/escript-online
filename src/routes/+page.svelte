@@ -23,7 +23,7 @@
     let contractAddress = "";
     let compileErrorMessage = "";
 
-    let flexMode = true;
+    let flexMode = false;
 
     function onCompileClick() {
         const contract = editor.getValue();
@@ -167,9 +167,9 @@
         </div>
     </div>
     <div class="h-vh w-full flex flex-col justify-center items-center flex-bg">
-        <div class:editor-flex={flexMode} class="shadow-2xl" class:w-full={!flexMode}>
+        <div class:editor-flex={flexMode} class:fake-window-header={flexMode} class:shadow-2xl={flexMode} class:w-full={!flexMode}>
             {#if flexMode}
-                <div class="fake-window-header">
+                <div>
                     <div class="ios-buttons">
                         <div class="ios-button close"></div>
                         <div class="ios-button minimize"></div>
