@@ -149,23 +149,37 @@
                     />
                 </svg>
             </button>
+            {#if flexMode}
+                <div class="flex items-center gap-4" style="min-width: 220px">
+                    <div class="flex items-center">
+                        <input id="default-radio-1" type="radio" value="" name="default-radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label for="default-radio-1" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">win95</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input checked id="default-radio-2" type="radio" value="" name="default-radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label for="default-radio-2" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">macOS</label>
+                    </div>
+                </div>
+            {/if}
 
-            <button
-                on:click={createBookmark}
-                class="flex items-center rounded-full px-3 py-1 gray-border"
-            >
-                save code as bookmark
-                <svg
-                    class="ml-2 octicon"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="15"
-                    height="15"
-                    viewBox="0 0 1792 1792"
-                    ><path
-                        d="M1420 128q23 0 44 9 33 13 52.5 41t19.5 62v1289q0 34-19.5 62t-52.5 41q-19 8-44 8-48 0-83-32l-441-424-441 424q-36 33-83 33-23 0-44-9-33-13-52.5-41t-19.5-62V240q0-34 19.5-62t52.5-41q21-9 44-9h1048z"
-                    /></svg
+            {#if !flexMode}
+                <button
+                    on:click={createBookmark}
+                    class="flex items-center rounded-full px-3 py-1 gray-border"
                 >
-            </button>
+                    save code as bookmark
+                    <svg
+                        class="ml-2 octicon"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="15"
+                        height="15"
+                        viewBox="0 0 1792 1792"
+                        ><path
+                            d="M1420 128q23 0 44 9 33 13 52.5 41t19.5 62v1289q0 34-19.5 62t-52.5 41q-19 8-44 8-48 0-83-32l-441-424-441 424q-36 33-83 33-23 0-44-9-33-13-52.5-41t-19.5-62V240q0-34 19.5-62t52.5-41q21-9 44-9h1048z"
+                        /></svg
+                    >
+                </button>
+            {/if}
         </div>
     </div>
     <div class="h-vh w-full flex flex-col justify-center items-center" class:flex-bg={flexMode} >
