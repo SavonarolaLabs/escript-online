@@ -23,6 +23,8 @@
     let contractAddress = "";
     let compileErrorMessage = "";
 
+    let lobbyLink = "";
+
     let flexMode = false;
 
     function onCompileClick() {
@@ -37,9 +39,8 @@
     }
 
     onMount(async () => {
-        //const ydoc = new Y.Doc();
-        //const provider = new WebrtcProvider(collabId, ydoc);
-        //const ycontent = ydoc.getText("monaco");
+        const urlParams = new URLSearchParams(window.location.search);
+        const lobbyId = urlParams.get("l");
 
         self.MonacoEnvironment = {
             getWorker: function (_moduleId: any, label: string) {
@@ -66,30 +67,70 @@
             window.history.replaceState(null, "", "?s=" + encoded);
         });
 
-        //new MonacoBinding(
-        //    ycontent,
-        //    editor.getModel(),
-        //    new Set([editor]),
-        //    provider.awareness
-        //);
+        if (lobbyId) {
+            createLobyWithId(lobbyId);
+        }
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const code = urlParams.get("s");
-        if (code) {
-            editor.setValue(atob(code));
+        if (!lobbyId) {
+            const code = urlParams.get("s");
+            if (code) {
+                editor.setValue(atob(code));
+            }
         }
     });
 
-    let copyConfirmation = false;
+    let copyContractConfirmation = false;
 
-    function clickCopy() {
-        if (!copyConfirmation) {
-            copyConfirmation = true;
+    function clickContractCopy() {
+        if (!copyContractConfirmation) {
+            copyContractConfirmation = true;
             setTimeout(() => {
-                copyConfirmation = false;
+                copyContractConfirmation = false;
             }, 3000);
         }
         navigator.clipboard.writeText(contractAddress);
+    }
+
+    let copyLobbyConfirmation = false;
+
+    function clickLobbyCopy() {
+        if (!copyLobbyConfirmation) {
+            copyLobbyConfirmation = true;
+            setTimeout(() => {
+                copyLobbyConfirmation = false;
+            }, 3000);
+        }
+        navigator.clipboard.writeText(lobbyLink);
+    }
+
+    function createLobyWithId(lobbyId: string, keepCode = false) {
+        const codeVal = editor.getValue();
+
+        lobbyLink = window.location.origin + "?l=" + lobbyId;
+        const ydoc = new Y.Doc();
+        const provider = new WebrtcProvider(lobbyId, ydoc);
+        const ycontent = ydoc.getText("monaco");
+
+        new MonacoBinding(
+            ycontent,
+            editor.getModel(),
+            new Set([editor]),
+            provider.awareness
+        );
+
+        if (keepCode) {
+            editor.setValue(codeVal);
+        }
+        clickLobbyCopy();
+    }
+
+    const genRanHex = (size) =>
+        [...Array(size)]
+            .map(() => Math.floor(Math.random() * 16).toString(16))
+            .join("");
+    function createLobby() {
+        const lobbyId = genRanHex(16);
+        createLobyWithId(lobbyId, true);
     }
 
     function createBookmark() {
@@ -113,13 +154,13 @@
         }
     }
 
-    function toggleFlex(){
-        if(flexMode){
+    function toggleFlex() {
+        if (flexMode) {
             flexMode = false;
-            editor.updateOptions({ lineNumbers: 'on' });
-        }else{
+            editor.updateOptions({ lineNumbers: "on" });
+        } else {
             flexMode = true;
-            editor.updateOptions({ lineNumbers: 'off' });
+            editor.updateOptions({ lineNumbers: "off" });
         }
     }
 </script>
@@ -128,90 +169,20 @@
     <div class="navbar flex justify-between items-center">
         <div class=" text-2xl font-bold p-4">ErgoScript</div>
         <div class="flex gap-4 items-center pr-2">
-            <!-- <Avatars /> -->
-            <button 
-                on:click={toggleFlex}
-                class="flex items-center px-2 py-1 gray-border" style="border-style:dashed;">
-                flex 
-                <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="ml-2"
-                >
-                    <path
-                        fill-rule="evenodd"
-                        clip-rule="evenodd"
-                        d="M9.77778 21H14.2222C17.3433 21 18.9038 21 20.0248 20.2646C20.51 19.9462 20.9267 19.5371 21.251 19.0607C22 17.9601 22 16.4279 22 13.3636C22 10.2994 22 8.76721 21.251 7.6666C20.9267 7.19014 20.51 6.78104 20.0248 6.46268C19.3044 5.99013 18.4027 5.82123 17.022 5.76086C16.3631 5.76086 15.7959 5.27068 15.6667 4.63636C15.4728 3.68489 14.6219 3 13.6337 3H10.3663C9.37805 3 8.52715 3.68489 8.33333 4.63636C8.20412 5.27068 7.63685 5.76086 6.978 5.76086C5.59733 5.82123 4.69555 5.99013 3.97524 6.46268C3.48995 6.78104 3.07328 7.19014 2.74902 7.6666C2 8.76721 2 10.2994 2 13.3636C2 16.4279 2 17.9601 2.74902 19.0607C3.07328 19.5371 3.48995 19.9462 3.97524 20.2646C5.09624 21 6.65675 21 9.77778 21ZM12 9.27273C9.69881 9.27273 7.83333 11.1043 7.83333 13.3636C7.83333 15.623 9.69881 17.4545 12 17.4545C14.3012 17.4545 16.1667 15.623 16.1667 13.3636C16.1667 11.1043 14.3012 9.27273 12 9.27273ZM12 10.9091C10.6193 10.9091 9.5 12.008 9.5 13.3636C9.5 14.7192 10.6193 15.8182 12 15.8182C13.3807 15.8182 14.5 14.7192 14.5 13.3636C14.5 12.008 13.3807 10.9091 12 10.9091ZM16.7222 10.0909C16.7222 9.63904 17.0953 9.27273 17.5556 9.27273H18.6667C19.1269 9.27273 19.5 9.63904 19.5 10.0909C19.5 10.5428 19.1269 10.9091 18.6667 10.9091H17.5556C17.0953 10.9091 16.7222 10.5428 16.7222 10.0909Z"
-                        fill="#bdbdbd"
-                    />
-                </svg>
-            </button>
-
-            <button
-                on:click={createBookmark}
-                class="flex items-center rounded-full px-3 py-1 gray-border"
-            >
-                save code as bookmark
-                <svg
-                    class="ml-2 octicon"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="15"
-                    height="15"
-                    viewBox="0 0 1792 1792"
-                    ><path
-                        d="M1420 128q23 0 44 9 33 13 52.5 41t19.5 62v1289q0 34-19.5 62t-52.5 41q-19 8-44 8-48 0-83-32l-441-424-441 424q-36 33-83 33-23 0-44-9-33-13-52.5-41t-19.5-62V240q0-34 19.5-62t52.5-41q21-9 44-9h1048z"
-                    /></svg
-                >
-            </button>
-        </div>
-    </div>
-    <div class="h-vh w-full flex flex-col justify-center items-center" class:flex-bg={flexMode} >
-        <div class:editor-flex={flexMode} class:fake-window-header={flexMode} class:shadow-2xl={flexMode} class:w-full={!flexMode}>
-            {#if flexMode}
-                <div>
-                    <div class="ios-buttons">
-                        <div class="ios-button close"></div>
-                        <div class="ios-button minimize"></div>
-                        <div class="ios-button maximize"></div>
-                    </div>
-                </div>
-            {/if}
-            <div bind:this={editorContainer} class="w-full" class:h-full={flexMode} class:h-vh={!flexMode} />
-        </div>
-    </div>
-    <div
-        class="footer w-full flex flex-col justify-end rounded-md"
-        style={compileErrorMessage ? "height: 40vh;" : ""}
-    >
-        {#if compileErrorMessage}
-            <div class="grow p-3 pt-2 text-red-400 overflow-y-scroll">
-                {compileErrorMessage}
-            </div>
-        {/if}
-
-        {#if !flexMode}
-        <div class="w-full flex items-center p-2 gap-4">
-            <a class="ml-2" href="https://github.com/SavonarolaLabs/escript-online">
-                <svg width="32" height="32" viewBox="0 0 98 96" xmlns="http://www.w3.org/2000/svg"><path fill="#bdbdbd" fill-rule="evenodd" clip-rule="evenodd" d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z"/></svg>
-            </a>
-            <div class="grow">
-                <!-- <input class="code-bar" bind:value={contractAddress}/> -->
+            {#if lobbyLink}
                 <div class="flex">
                     <input
                         class="w-full input-monospace"
                         type="text"
                         readonly={true}
-                        value={contractAddress}
+                        value={lobbyLink?.split("=")[1]}
                     />
-                    <button on:click={clickCopy}>
+                    <button on:click={clickLobbyCopy}>
                         <div
                             class="h-full copy-btn flex items-center justify-center px-4"
                         >
-                            <clipboard-copy value={contractAddress}>
-                                {#if !copyConfirmation}
+                            <clipboard-copy value={lobbyLink}>
+                                {#if !copyLobbyConfirmation}
                                     <svg
                                         aria-hidden="true"
                                         height="16"
@@ -247,26 +218,203 @@
                         </div>
                     </button>
                 </div>
-            </div>
-            <select
-                bind:value={selectedNetwork}
-                name="network"
-                id="network"
-                class=" bg-black flex items-center gap-2 m-2 px-3 py-2 custom-select"
-                style="  -webkit-appearance: none !important;
--moz-appearance: none !important;"
-            >
-                <option value={Network.Mainnet}>Mainnet</option>
-                <option value={Network.Testnet}>Testnet</option>
-            </select>
+            {:else}
+                <button
+                    on:click={createLobby}
+                    class="flex items-center gap-2 gray-border p-1 px-3 rounded-md"
+                    >create lobby
+                    <svg
+                        width="24"
+                        height="24"
+                        fill="#bdbdbd"
+                        version="1.0"
+                        viewBox="0 0 24 24"
+                        xml:space="preserve"
+                        xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink"
+                        ><g
+                            ><g
+                                ><path
+                                    d="M16.5,14c-1.5,0-2.7,0.4-3.6,0.9c1.4,1.2,2,2.6,2.1,2.7l0.1,0.2V20h8v-2C23,18,21.4,14,16.5,14z"
+                                /></g
+                            ><g><circle cx="16.5" cy="8.5" r="3.5" /></g></g
+                        ><g
+                            ><path
+                                d="M4,8.5C4,6.6,5.6,5,7.5,5S11,6.6,11,8.5c0,1.9-1.6,3.5-3.5,3.5S4,10.4,4,8.5z M7.5,14C2.6,14,1,18,1,18v2h13v-2   C14,18,12.4,14,7.5,14z"
+                            /></g
+                        ></svg
+                    >
+                </button>
+            {/if}
+
+            <!-- <Avatars /> -->
             <button
-                on:click={onCompileClick}
-                class="btn flex items-center gap-2 m-2 px-3 py-2"
+                on:click={toggleFlex}
+                class="flex items-center px-2 py-1 gray-border"
+                style="border-style:dashed;"
             >
-                compile
-                <img src="command_line.png" class="w-4" alt="" />
+                flex
+                <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="ml-2"
+                >
+                    <path
+                        fill-rule="evenodd"
+                        clip-rule="evenodd"
+                        d="M9.77778 21H14.2222C17.3433 21 18.9038 21 20.0248 20.2646C20.51 19.9462 20.9267 19.5371 21.251 19.0607C22 17.9601 22 16.4279 22 13.3636C22 10.2994 22 8.76721 21.251 7.6666C20.9267 7.19014 20.51 6.78104 20.0248 6.46268C19.3044 5.99013 18.4027 5.82123 17.022 5.76086C16.3631 5.76086 15.7959 5.27068 15.6667 4.63636C15.4728 3.68489 14.6219 3 13.6337 3H10.3663C9.37805 3 8.52715 3.68489 8.33333 4.63636C8.20412 5.27068 7.63685 5.76086 6.978 5.76086C5.59733 5.82123 4.69555 5.99013 3.97524 6.46268C3.48995 6.78104 3.07328 7.19014 2.74902 7.6666C2 8.76721 2 10.2994 2 13.3636C2 16.4279 2 17.9601 2.74902 19.0607C3.07328 19.5371 3.48995 19.9462 3.97524 20.2646C5.09624 21 6.65675 21 9.77778 21ZM12 9.27273C9.69881 9.27273 7.83333 11.1043 7.83333 13.3636C7.83333 15.623 9.69881 17.4545 12 17.4545C14.3012 17.4545 16.1667 15.623 16.1667 13.3636C16.1667 11.1043 14.3012 9.27273 12 9.27273ZM12 10.9091C10.6193 10.9091 9.5 12.008 9.5 13.3636C9.5 14.7192 10.6193 15.8182 12 15.8182C13.3807 15.8182 14.5 14.7192 14.5 13.3636C14.5 12.008 13.3807 10.9091 12 10.9091ZM16.7222 10.0909C16.7222 9.63904 17.0953 9.27273 17.5556 9.27273H18.6667C19.1269 9.27273 19.5 9.63904 19.5 10.0909C19.5 10.5428 19.1269 10.9091 18.6667 10.9091H17.5556C17.0953 10.9091 16.7222 10.5428 16.7222 10.0909Z"
+                        fill="#bdbdbd"
+                    />
+                </svg>
+            </button>
+
+            <button
+                on:click={createBookmark}
+                class="flex items-center rounded-full px-3 py-1 gray-border"
+            >
+                save code as bookmark
+                <svg
+                    class="ml-2 octicon"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="15"
+                    height="15"
+                    viewBox="0 0 1792 1792"
+                    ><path
+                        d="M1420 128q23 0 44 9 33 13 52.5 41t19.5 62v1289q0 34-19.5 62t-52.5 41q-19 8-44 8-48 0-83-32l-441-424-441 424q-36 33-83 33-23 0-44-9-33-13-52.5-41t-19.5-62V240q0-34 19.5-62t52.5-41q21-9 44-9h1048z"
+                    /></svg
+                >
             </button>
         </div>
+    </div>
+    <div
+        class="h-vh w-full flex flex-col justify-center items-center"
+        class:flex-bg={flexMode}
+    >
+        <div
+            class:editor-flex={flexMode}
+            class:fake-window-header={flexMode}
+            class:shadow-2xl={flexMode}
+            class:w-full={!flexMode}
+        >
+            {#if flexMode}
+                <div>
+                    <div class="ios-buttons">
+                        <div class="ios-button close" />
+                        <div class="ios-button minimize" />
+                        <div class="ios-button maximize" />
+                    </div>
+                </div>
+            {/if}
+            <div
+                bind:this={editorContainer}
+                class="w-full"
+                class:h-full={flexMode}
+                class:h-vh={!flexMode}
+            />
+        </div>
+    </div>
+    <div
+        class="footer w-full flex flex-col justify-end rounded-md"
+        style={compileErrorMessage ? "height: 40vh;" : ""}
+    >
+        {#if compileErrorMessage}
+            <div class="grow p-3 pt-2 text-red-400 overflow-y-scroll">
+                {compileErrorMessage}
+            </div>
+        {/if}
+
+        {#if !flexMode}
+            <div class="w-full flex items-center p-2 gap-4">
+                <a
+                    class="ml-2"
+                    href="https://github.com/SavonarolaLabs/escript-online"
+                >
+                    <svg
+                        width="32"
+                        height="32"
+                        viewBox="0 0 98 96"
+                        xmlns="http://www.w3.org/2000/svg"
+                        ><path
+                            fill="#bdbdbd"
+                            fill-rule="evenodd"
+                            clip-rule="evenodd"
+                            d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z"
+                        /></svg
+                    >
+                </a>
+                <div class="grow">
+                    <!-- <input class="code-bar" bind:value={contractAddress}/> -->
+                    <div class="flex">
+                        <input
+                            class="w-full input-monospace"
+                            type="text"
+                            readonly={true}
+                            value={contractAddress}
+                        />
+                        <button on:click={clickContractCopy}>
+                            <div
+                                class="h-full copy-btn flex items-center justify-center px-4"
+                            >
+                                <clipboard-copy value={contractAddress}>
+                                    {#if !copyContractConfirmation}
+                                        <svg
+                                            aria-hidden="true"
+                                            height="16"
+                                            viewBox="0 0 16 16"
+                                            version="1.1"
+                                            width="16"
+                                            data-view-component="true"
+                                            class="octicon"
+                                        >
+                                            <path
+                                                d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"
+                                            /><path
+                                                d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"
+                                            />
+                                        </svg>
+                                    {:else}
+                                        <svg
+                                            aria-hidden="true"
+                                            height="16"
+                                            viewBox="0 0 16 16"
+                                            version="1.1"
+                                            width="16"
+                                            data-view-component="true"
+                                            class=""
+                                        >
+                                            <path
+                                                fill="lightgreen"
+                                                d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"
+                                            />
+                                        </svg>
+                                    {/if}
+                                </clipboard-copy>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+                <select
+                    bind:value={selectedNetwork}
+                    name="network"
+                    id="network"
+                    class=" bg-black flex items-center gap-2 m-2 px-3 py-2 custom-select"
+                    style="  -webkit-appearance: none !important;
+-moz-appearance: none !important;"
+                >
+                    <option value={Network.Mainnet}>Mainnet</option>
+                    <option value={Network.Testnet}>Testnet</option>
+                </select>
+                <button
+                    on:click={onCompileClick}
+                    class="btn flex items-center gap-2 m-2 px-3 py-2"
+                >
+                    compile
+                    <img src="command_line.png" class="w-4" alt="" />
+                </button>
+            </div>
         {/if}
     </div>
 </div>
@@ -275,7 +423,7 @@
     .ios-buttons {
         display: flex;
         gap: 5px;
-        padding:0.7em;
+        padding: 0.7em;
         padding-left: 1em;
     }
 
@@ -299,28 +447,32 @@
         background-color: #4cd964;
     }
 
-
-    .fake-window-header{
+    .fake-window-header {
         border-top-left-radius: 6px;
         border-top-right-radius: 6px;
         background: #1e1e1e;
     }
 
-    .editor-flex{
-        height:300px;
+    .editor-flex {
+        height: 300px;
         width: 600px;
-        margin-top:-10%;
+        margin-top: -10%;
         border-bottom-left-radius: 8px;
         border-bottom-right-radius: 8px;
         overflow: hidden;
         resize: both;
-        -webkit-box-shadow: 0px 0px 81px 5px rgba(0,0,0,0.7);
-        -moz-box-shadow: 0px 0px 81px 5px rgba(0,0,0,0.7);
-        box-shadow: 0px 0px 81px 5px rgba(0,0,0,0.7);
+        -webkit-box-shadow: 0px 0px 81px 5px rgba(0, 0, 0, 0.7);
+        -moz-box-shadow: 0px 0px 81px 5px rgba(0, 0, 0, 0.7);
+        box-shadow: 0px 0px 81px 5px rgba(0, 0, 0, 0.7);
     }
 
-    .flex-bg{
-        background-image: linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
+    .flex-bg {
+        background-image: linear-gradient(
+            43deg,
+            #4158d0 0%,
+            #c850c0 46%,
+            #ffcc70 100%
+        );
     }
     svg.octicon > path {
         fill: #bdbdbd;
