@@ -168,7 +168,10 @@
 
 <div class="h-vh">
     <div class="navbar flex justify-between items-center">
-        <div class=" text-2xl font-bold p-4">ErgoScript</div>
+        <div class="flex items-center">
+            <img src="logo.png" alt="" class="ml-4" style="width:30px;">
+            <div class=" text-2xl font-bold p-4 pl-2">ErgoScript</div>
+        </div>
         <div class="flex gap-4 items-center pr-2">
             {#if lobbyLink}
                 <div class="flex">
