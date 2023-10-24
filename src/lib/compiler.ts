@@ -1,6 +1,11 @@
 import { compile } from "@fleet-sdk/compiler";
 
-export function compileContract(contract: string, network: any): string {
-    const tree = compile(contract);
-    return tree.toAddress(network).toString()
+export function compileContract(contract: string, network: any, version: string): string {
+    // default v1 options
+    let options = {};
+    if(version == 'v0'){
+        options = { version: 0, includeSize: true};
+    }
+    const tree = compile(contract, options);
+    return tree.toAddress(network).toString(network)
 }

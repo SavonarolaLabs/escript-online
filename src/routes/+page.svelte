@@ -20,6 +20,7 @@
     let collabId = "duck";
 
     let selectedNetwork = Network.Mainnet;
+    let selectedVersion = 'v1';
     let contractAddress = "";
     let compileErrorMessage = "";
 
@@ -30,7 +31,7 @@
     function onCompileClick() {
         const contract = editor.getValue();
         try {
-            contractAddress = compileContract(contract, selectedNetwork);
+            contractAddress = compileContract(contract, selectedNetwork, selectedVersion);
             compileErrorMessage = "";
         } catch (e) {
             contractAddress = "";
@@ -396,6 +397,17 @@
                         </button>
                     </div>
                 </div>
+                <select
+                    bind:value={selectedVersion}
+                    name="network"
+                    id="network"
+                    class=" bg-black flex items-center gap-2 m-2 px-3 py-2 custom-select"
+                    style="  -webkit-appearance: none !important;
+-moz-appearance: none !important;"
+                >
+                    <option value={'v1'}>v1</option>
+                    <option value={'v0'}>v0</option>
+                </select>
                 <select
                     bind:value={selectedNetwork}
                     name="network"
