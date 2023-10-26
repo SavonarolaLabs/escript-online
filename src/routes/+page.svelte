@@ -11,13 +11,9 @@
 
     import { Network } from "@fleet-sdk/core";
 
-    import queryString from "query-string";
-
     let editorContainer: HTMLDivElement;
     let editor: monaco.editor.IStandaloneCodeEditor;
     let Monaco: typeof monaco;
-
-    let collabId = "duck";
 
     let selectedNetwork = Network.Mainnet;
     let selectedVersion = 'v1';
