@@ -7,10 +7,42 @@
     import * as Y from "yjs";
     import { WebrtcProvider } from "y-webrtc";
     import { MonacoBinding } from "y-monaco";
-    import { compileContract } from "$lib/compiler";
+    import { compileContract, compileToTree } from "$lib/compiler";
     import * as pako from "pako";
 
+    import * as srust from "ergo-lib-wasm-browser";
     import { Network } from "@fleet-sdk/core";
+
+    import {
+    Address,
+    BlockHeaders,
+    BoxId,
+    BoxValue,
+    Contract,
+    DataInputs,
+    DerivationPath,
+    ErgoBoxCandidate,
+    ErgoBoxCandidateBuilder,
+    ErgoBoxCandidates,
+    ErgoBoxes,
+    ErgoStateContext,
+    ExtSecretKey,
+    I64,
+    Mnemonic,
+    NetworkAddress,
+    NetworkPrefix,
+    PreHeader,
+    SecretKey,
+    SecretKeys,
+    TxBuilder,
+    UnsignedInput, 
+    UnsignedInputs, 
+    UnsignedTransaction,
+    Wallet,
+    ErgoTree
+} from "ergo-lib-wasm-browser";
+    import Switch from "$lib/Switch.svelte";
+    import { selected_tab } from "$lib/store";
 
     let editorContainer: HTMLDivElement;
     let editor: monaco.editor.IStandaloneCodeEditor;
@@ -37,6 +69,9 @@
     }
 
     onMount(async () => {
+        window.srust = srust;
+        window.Address = Address;
+        window.ErgoTree = ErgoTree;
 
         const urlParams = new URLSearchParams(window.location.search);
         const lobbyId = urlParams.get("l");
@@ -61,6 +96,9 @@
         });
 
         editor.getModel().onDidChangeContent((event) => {
+            if($selected_tab != 'code'){
+                return;
+            }
             const val = editor.getValue();
             const deflated = pako.deflate(val);
 
@@ -182,6 +220,29 @@
             editor.updateOptions({ lineNumbers: "off" });
         }
     }
+
+    let codeBackup = ""
+
+    selected_tab.subscribe(tab =>{
+        if(tab == 'code'){
+            if(codeBackup != ''){
+                editor.setValue(codeBackup);
+                editor.updateOptions({ readOnly: false })
+            }
+        }
+        if(tab == 'tree'){
+            editor.updateOptions({ readOnly: true })
+            codeBackup = editor.getValue();
+            let showString = '';
+            try {
+                const treeBytes = compileToTree(codeBackup, selectedNetwork, selectedVersion);
+                showString = ErgoTree.from_bytes(treeBytes).pretty_print();
+            } catch (e) {
+                showString = e.message;
+            }
+            editor.setValue(showString);
+        }
+    })
 </script>
 
 <div class="h-vh">
@@ -189,6 +250,7 @@
         <div class="flex items-center">
             <img src="logo.png" alt="" class="ml-4" style="width:30px;">
             <div class=" text-2xl font-bold p-4 pl-2">ErgoScript</div>
+                <Switch></Switch>
         </div>
         <div class="flex gap-4 items-center pr-2">
             {#if lobbyLink}
