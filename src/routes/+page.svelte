@@ -8,6 +8,7 @@
     import { WebrtcProvider } from "y-webrtc";
     import { MonacoBinding } from "y-monaco";
     import { compileContract } from "$lib/compiler";
+    import * as pako from "pako";
 
     import { Network } from "@fleet-sdk/core";
 
@@ -36,6 +37,7 @@
     }
 
     onMount(async () => {
+
         const urlParams = new URLSearchParams(window.location.search);
         const lobbyId = urlParams.get("l");
 
@@ -59,9 +61,15 @@
         });
 
         editor.getModel().onDidChangeContent((event) => {
-            editor.getValue();
-            const encoded = btoa(editor.getValue());
-            window.history.replaceState(null, "", "?s=" + encoded);
+            const val = editor.getValue();
+            const deflated = pako.deflate(val);
+
+            let binaryString = "";
+            deflated.forEach((byte) => {
+                binaryString += String.fromCharCode(byte);
+            });
+
+            window.history.replaceState(null, "", "?s=" + btoa(binaryString));
         });
 
         if (lobbyId) {
@@ -69,9 +77,23 @@
         }
 
         if (!lobbyId) {
-            const code = urlParams.get("s");
-            if (code) {
-                editor.setValue(atob(code));
+            const str = urlParams.get("s");
+
+            if(str){
+                const decoded = atob(str)
+                const uint8Array = new Uint8Array(decoded.length);
+                for (let i = 0; i < decoded.length; i++) {
+                    uint8Array[i] = decoded.charCodeAt(i);
+                }
+                
+                const inflated = pako.inflate(uint8Array);
+
+                let binaryString = "";
+                inflated.forEach((byte) => {
+                    binaryString += String.fromCharCode(byte);
+                });
+
+                editor.setValue(binaryString);
             }
         }
     });
