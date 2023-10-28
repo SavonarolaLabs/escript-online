@@ -13,6 +13,8 @@
     import * as srust from "ergo-lib-wasm-browser";
     import { Network } from "@fleet-sdk/core";
 
+    import socket from "$lib/user_socket"
+
     import {
     Address,
     BlockHeaders,
@@ -69,9 +71,7 @@
     }
 
     onMount(async () => {
-        window.srust = srust;
-        window.Address = Address;
-        window.ErgoTree = ErgoTree;
+        console.log(socket);
 
         const urlParams = new URLSearchParams(window.location.search);
         const lobbyId = urlParams.get("l");
@@ -175,9 +175,10 @@
             provider.awareness
         );
 
-        if (keepCode) {
-            editor.setValue(codeVal);
-        }
+        //if (keepCode) {
+        //    editor.setValue(codeVal);
+        //}
+        editor.getModel().setEOL(0);
         clickLobbyCopy();
     }
 
