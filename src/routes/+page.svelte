@@ -50,6 +50,7 @@
 
     let selectedNetwork = Network.Mainnet;
     let selectedVersion = 'v1';
+    let selectedIncludeSize = false;
     let contractAddress = "";
     let compileErrorMessage = "";
 
@@ -60,7 +61,7 @@
     function onCompileClick() {
         const contract = editor.getValue();
         try {
-            contractAddress = compileContract(contract, selectedNetwork, selectedVersion);
+            contractAddress = compileContract(contract, selectedNetwork, selectedVersion, selectedIncludeSize);
             compileErrorMessage = "";
         } catch (e) {
             contractAddress = "";
@@ -491,6 +492,19 @@
                     <option value={'v1'}>v1</option>
                     <option value={'v0'}>v0</option>
                 </select>
+                {#if selectedVersion == 'v0'}
+                <select
+                    bind:value={selectedIncludeSize}
+                    name="includeSize"
+                    id="includeSize"
+                    class=" bg-black flex items-center gap-2 m-2 px-3 py-2 custom-select"
+                    style="  -webkit-appearance: none !important;
+-moz-appearance: none !important;"
+                >
+                    <option value={false}>includeSize: false &nbsp;&nbsp;</option>
+                    <option value={true}>includeSize: true &nbsp;&nbsp;</option>
+                </select>
+                {/if}
                 <select
                     bind:value={selectedNetwork}
                     name="network"
@@ -603,7 +617,7 @@
     select {
         background: url("data:image/svg+xml;utf8, <svg width='16' height='16' viewBox='0 0 330 330' xmlns='http://www.w3.org/2000/svg'><g><path fill='%23bdbdbd' d='m325.61 229.39-150-150c-2.812-2.813-6.628-4.393-10.606-4.393-3.979 0-7.794 1.581-10.607 4.394l-150 150c-5.858 5.858-5.858 15.355 0 21.213 5.857 5.857 15.355 5.858 21.213 0l139.39-139.39 139.4 139.39c2.929 2.929 6.768 4.393 10.607 4.393s7.678-1.464 10.607-4.394c5.857-5.858 5.857-15.355-1e-3 -21.213z'/></g></svg>")
             no-repeat;
-        background-position: 80% 50%;
+        background-position: 85% 50%;
         padding-right: 44px;
         padding-left: 18px;
         background-color: #1e1e1e;
