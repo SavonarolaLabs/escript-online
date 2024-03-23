@@ -198,7 +198,7 @@
     }
 
     function copyErgoScriptAsHtml(){
-        const codeString = hljs.highlight('scala', editor.getValue()).value;
+        const codeString = hljs.highlight('scala', editor.getValue()).value.replaceAll("{","&#123;").replaceAll("}","&#125;");
         navigator.clipboard.writeText(`
 <style>
 .hljs {
@@ -338,7 +338,6 @@
                 <pre><code class="hljs">${codeString}</code></pre>
             </div>   
     </div>
-</div>
     `);
     }
 
