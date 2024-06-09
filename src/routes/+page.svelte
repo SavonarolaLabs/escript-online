@@ -114,7 +114,7 @@
                 binaryString += String.fromCharCode(byte);
             });
 
-            window.history.replaceState(null, "", "?s=" + btoa(binaryString));
+            window.history.replaceState(null, "", "?s=" +encodeURIComponent(btoa(binaryString)));
         });
 
         if (lobbyId) {
@@ -125,7 +125,7 @@
             const str = urlParams.get("s");
 
             if(str){
-                const decoded = atob(str)
+                const decoded = atob(decodeURIComponent(str));
                 const uint8Array = new Uint8Array(decoded.length);
                 for (let i = 0; i < decoded.length; i++) {
                     uint8Array[i] = decoded.charCodeAt(i);
@@ -456,7 +456,7 @@
             {:else}
                 <button
                     on:click={createLobby}
-                    class="flex items-center gap-2 gray-border p-1 px-3 rounded-md"
+                    class="flex items-center gap-2 gray-border p-1 px-3 rounded-md hidden"
                     >create lobby
                     <svg
                         width="24"
