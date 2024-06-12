@@ -84,6 +84,9 @@
         padding: 10px;            /* Add padding */
         border-radius: 5px;       /* Add rounded corners */
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Add shadow */
+        padding:1em;
+        padding-left:2em;
+        padding-right:1.5em;
         font-size: 18px;
     }
   </style>
