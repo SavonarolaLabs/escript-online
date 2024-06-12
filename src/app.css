@@ -7,3 +7,7 @@ html, body{
     background-color: #1e1e1e;
     color: rgb(231, 231, 231);
 }
+
+.blocklyMainBackground {
+    stroke-width: 0 !important;
+}
