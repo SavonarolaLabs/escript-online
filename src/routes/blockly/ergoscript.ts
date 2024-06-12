@@ -226,7 +226,7 @@ export const blocks = [
 		],
 		output: "Boolean",
 		colour: 120,
-		tooltip: `m of n
+		tooltip: `Number of Keys from a List.
 		It's like when you want any two of Three Musketeers to be able to spend moni,
 		in order to get the third guy out of trouble.
 		{ atLeast(2, Coll[pkAthos, pkPorthos, pkAramis]) }`,
