@@ -124,7 +124,10 @@ export const blocks = [
 		],
 		output: "Boolean",
 		colour: 230,
-		tooltip: "Public key",
+		tooltip: `Public Key
+		Also known as Ergo Address, for example 9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU.
+		Requires address owner sigmature to spend funds from this contract.
+		`,
 		helpUrl: "",
 	},
 	{
@@ -144,7 +147,9 @@ export const blocks = [
 		],
 		output: "Boolean",
 		colour: 120,
-		tooltip: "AND operation",
+		tooltip: `AND Operation
+		In it's simplest form combines 2 pks: { pkAlice && pkBob }
+		thus creates a contact which requires BOTH signatures to spend funds.`,
 		helpUrl: "",
 	},
 	{
@@ -164,7 +169,9 @@ export const blocks = [
 		],
 		output: "Boolean",
 		colour: 210,
-		tooltip: "OR operation",
+		tooltip: `AND Operation
+		In it's simplest form combines 2 pks: { pkAlice || pkBob }
+		thus creates a contact which requires ONE of two possible signatures to spend funds.`,
 		helpUrl: "",
 	},
 	{
@@ -189,7 +196,12 @@ export const blocks = [
 		],
 		output: "Boolean",
 		colour: 210,
-		tooltip: "Timelock conditional",
+		tooltip: `Timelock
+		A simple IF ELSE.
+		IF path is executed before a certain blockchain height is reached.
+		ELSE path after certain blockchain height.
+		A blockchain doesn't know what time it is,
+		but we are smart and know that 1 Block ≈ 2min.`,
 		helpUrl: "",
 	},
 	{
@@ -214,7 +226,10 @@ export const blocks = [
 		],
 		output: "Boolean",
 		colour: 120,
-		tooltip: "Threshold signature scheme",
+		tooltip: `m of n
+		It's like when you want any two of Three Musketeers to be able to spend moni,
+		in order to get the third guy out of trouble.
+		{ atLeast(2, Coll[pkAthos, pkPorthos, pkAramis]) }`,
 		helpUrl: "",
 	},
 	{
@@ -230,7 +245,10 @@ export const blocks = [
 		previousStatement: "Key",
 		nextStatement: "Key",
 		colour: 230,
-		tooltip: "Public key for threshold",
+		tooltip: `Public Key
+		Also known as Ergo Address, for example 9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU.
+		Requires address owner sigmature to spend funds from this contract.
+		`,
 		helpUrl: "",
 	},
 ];
