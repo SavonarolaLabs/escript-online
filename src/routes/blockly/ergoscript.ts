@@ -7,7 +7,7 @@ ergoScriptGenerator.ORDER_LOGICAL_AND = 1;
 ergoScriptGenerator.ORDER_LOGICAL_OR = 1;
 ergoScriptGenerator.ORDER_CONDITIONAL = 2;
 
-let uniqueKeys
+let uniqueKeys!: Set<string>
 
 ergoScriptGenerator.init = function (workspace) {
 	uniqueKeys = new Set();

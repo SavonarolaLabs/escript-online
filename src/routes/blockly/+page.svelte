@@ -23,28 +23,13 @@
 	let selectedNetwork = Network.Mainnet;
 	let selectedVersion = "v1";
 	let selectedIncludeSize = false;
+	$: compileClick(editor?.getValue()), selectedNetwork, selectedVersion, selectedIncludeSize;
+
+
 	let contractAddress = "";
 	let compileErrorMessage = "";
-
-	let lobbyLink = "";
-
 	let flexMode = false;
 
-	function onCompileClick() {
-		const contract = editor.getValue();
-		try {
-			contractAddress = compileContract(
-				contract,
-				selectedNetwork,
-				selectedVersion,
-				selectedIncludeSize
-			);
-			compileErrorMessage = "";
-		} catch (e) {
-			contractAddress = "";
-			compileErrorMessage = e.message;
-		}
-	}
 
 	onMount(async () => {
 		window.srust = srust;
@@ -63,7 +48,7 @@
 		Monaco = await import("monaco-editor");
 		editor = Monaco.editor.create(editorContainer, {
 			value: `{
-  proveDlog(CONTEXT.preHeader.minerPk)
+
 }`,
 			language: "scala",
 			minimap: { enabled: false },
@@ -74,6 +59,28 @@
 		});
 		editor.updateOptions({ readOnly: true });
 	});
+
+	function handleCodeGenerated(event:any){
+		if(editor){
+			const { code } = event.detail;
+			editor.setValue(code)
+			compileClick(code);
+		}
+	}
+
+
+
+	function compileClick(contract:string) {
+		if(!contract) return;
+        try {
+            contractAddress = compileContract(contract, selectedNetwork, selectedVersion, selectedIncludeSize);
+            compileErrorMessage = "";
+        } catch (e) {
+            contractAddress = "";
+            //compileErrorMessage = e.message;
+        }
+    }
+
 
 	let copyContractConfirmation = false;
 
@@ -92,7 +99,7 @@
 	<div class="navbar flex justify-between items-center">
 		<div class="flex items-center">
 			<img src="logo.png" alt="" class="ml-4" style="width:30px;" />
-			<div class=" text-2xl font-bold p-4 pl-2">ErgoScript</div>
+			<div class=" text-2xl font-bold p-4 pl-2">Multisig Editor</div>
 		</div>
 		<div class="flex gap-4 items-center pr-2"></div>
 	</div>
@@ -100,12 +107,13 @@
 		class="h-vh w-full flex flex-col justify-center items-center"
 	>
 		<div
-			class="flex flex-col w-full"
+			class="flex flex-col w-full flex-grow"
 		>
-            <Blockly></Blockly>
+            <Blockly on:codeUpdate={handleCodeGenerated}></Blockly>
 			<div
 				bind:this={editorContainer}
-				class="w-full "
+				style="flex-grow:1; height:200px; border-top: 1px solid #fff3;padding-top:0.5em;"
+				class="w-full"
 			/>
 		</div>
 	</div>
