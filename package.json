@@ -34,6 +34,7 @@
 		"@sveltejs/adapter-static": "^2.0.3",
 		"blockly": "^11.1.0",
 		"ergo-lib-wasm-browser": "^0.26.0",
+		"firebase": "^10.12.2",
 		"highlight.js": "^11.9.0",
 		"jsonwebtoken": "^9.0.2",
 		"jwks-rsa": "^3.1.0",

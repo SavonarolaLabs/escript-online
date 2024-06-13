@@ -35,11 +35,11 @@
 					const claims = await auth0Client?.getIdTokenClaims();
 
           const octokit = new Octokit({
-            auth: token,
+            auth: claims.__raw,
           });
           await createRepo(octokit);
 
-					console.log({ user, claims, token });
+					console.log({ user, claims, token, result });
 					localStorage.setItem("authToken", token);
 					localStorage.setItem("isAuthenticated", "true");
 					isAuthenticated.set(true);
