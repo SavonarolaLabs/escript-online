@@ -25,6 +25,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@auth0/auth0-spa-js": "^2.1.3",
 		"@blockly/theme-dark": "^7.0.1",
 		"@fleet-sdk/common": "^0.2.3",
 		"@fleet-sdk/compiler": "^0.2.3",
