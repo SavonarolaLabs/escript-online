@@ -13,9 +13,10 @@
 	const app = initializeApp(firebaseConfig);
 	const auth = getAuth(app);
 	const provider = new GithubAuthProvider();
+	provider.addScope('repo'); // Request the 'repo' scope
 
 	let user: any = null;
-	let newRepoName = "test-test-test";
+	let newRepoName = "test-repo";
 	let githubToken = "";
 	let result: any;
 
@@ -23,20 +24,23 @@
 		auth.onAuthStateChanged(async (firebaseUser) => {
 			user = firebaseUser;
 			if (user) {
-				githubToken = (await user.getIdTokenResult()).claims
-					.githubAccessToken;
+				const tokenResult = await user.getIdTokenResult();
+				githubToken = tokenResult.claims.githubAccessToken || "";
+				if (!githubToken) {
+					console.error("GitHub token not found in user claims.");
+				}
 			}
 		});
 	});
 
 	const login = async () => {
 		try {
-			let result = await signInWithPopup(auth, provider);
+			const result = await signInWithPopup(auth, provider);
 			user = result.user;
-      const credential = GithubAuthProvider.credentialFromResult(result);
-      if(credential){
-			  githubToken = credential.accessToken;
-      }
+			const credential = GithubAuthProvider.credentialFromResult(result);
+			if (credential) {
+				githubToken = credential.accessToken as string;
+			}
 			console.log("GitHub Access Token:", githubToken);
 			console.log("User Info:", user);
 		} catch (error) {
