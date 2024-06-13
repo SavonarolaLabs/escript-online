@@ -15,7 +15,7 @@
 	const provider = new GithubAuthProvider();
 	provider.addScope('repo'); // Request the 'repo' scope
 
-	let user: any = null;
+	let user:any= null;
 	let newRepoName = "test-repo";
 	let githubToken = "";
 	let result: any;
@@ -23,13 +23,6 @@
 	onMount(() => {
 		auth.onAuthStateChanged(async (firebaseUser) => {
 			user = firebaseUser;
-			if (user) {
-				const tokenResult = await user.getIdTokenResult();
-				githubToken = tokenResult.claims.githubAccessToken || "";
-				if (!githubToken) {
-					console.error("GitHub token not found in user claims.");
-				}
-			}
 		});
 	});
 
