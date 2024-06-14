@@ -9,9 +9,9 @@
 	];
 </script>
 
-<div class="nav flex items-center gap-2 justify-between p-4">
-	<div class="text-2xl">LIONGUARD</div>
-	<div class="flex items-center gap-4">
+<div class="nav flex items-center gap-2 justify-between px-8 py-4">
+	<div class="text-4xl" style="font-family: emoji;">LIONGUARD</div>
+	<div class="flex items-center gap-10">
 		<a href="https://explorer.ergoplatform.com/en/"> Explorer </a>
 		<div>KYA</div>
 		<div>Support</div>
@@ -59,13 +59,13 @@
 	</div>
 	<div class="flex">
 		<input
-			class="flex rounded-sm p-3 gap-5"
+			class="flex rounded-sm p-3 gap-5 pl-6"
 			value="10000"
 			style="border-top-left-radius: 20px;"
 		/>
 		<div>
 			<button
-				class="px-6 py-3 cyan-bg text-black rounded-sm font-bold"
+				class="px-12 py-6 cyan-bg text-black rounded-sm font-bold"
 				style="border-top-left-radius: 0; border-bottom-left-radius: 0; border-bottom-right-radius:10px"
 				>DEPOSIT</button
 			>
@@ -93,9 +93,8 @@
 		line-height: 1em;
 		font-family: "Courier New", Courier, monospace;
 		font-size: larger;
-		@apply rounded-full px-4 py-2;
+		@apply rounded-full px-8 py-4;
 	}
-
 	.top-section {
 		background-color: var(--color-very-dark-gray);
 	}
