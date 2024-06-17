@@ -122,6 +122,10 @@
 		}
 	};
 
+	async function deplotPages() {
+		await deployAsGithubPage(octokit, githubUsername, newRepoName);
+	}
+
 	const deployAsGithubPage = async (
 		octokit: any,
 		owner: string,
@@ -130,13 +134,17 @@
 		try {
 			// Set the main branch as the GitHub Pages source
 			const response = await octokit.request(
-				"PUT /repos/{owner}/{repo}/pages",
+				"POST /repos/{owner}/{repo}/pages",
 				{
 					owner: owner,
 					repo: repo,
 					source: {
 						branch: "main",
 						path: "/",
+					},
+					headers: {
+						Accept: "application/vnd.github+json",
+						"X-GitHub-Api-Version": "2022-11-28",
 					},
 				}
 			);
@@ -191,10 +199,12 @@
 		{JSON.stringify(result, null, 2)}
 	{/if}
 </div>
-<div class="flex flex-col items-start">
+<div class="flex flex-col items-start mb-4">
 	<button class="btn" on:click={createFile}>create file</button>
-	<button class="btn" on:click={fetchGitHubUsername}>deploy pages</button>
+	<button class="btn" on:click={deplotPages}>deploy pages</button>
 </div>
+
+<a class="text-blue-400 underline" href={`https://${githubUsername}.github.io/${newRepoName}`}>{newRepoName} pages</a>	
 
 <style>
 	.hidden {
