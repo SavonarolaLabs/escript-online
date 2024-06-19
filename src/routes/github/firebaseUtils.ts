@@ -9,6 +9,7 @@ import { Octokit } from "@octokit/rest";
 import { firebaseConfig } from "./firebaseConfig";
 import { writable } from "svelte/store";
 import fileContent from './fileContent.json';
+import { Buffer } from 'buffer';
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -53,12 +54,12 @@ export const logout = async () => {
     }
 };
 
-export const createRepo = async (newRepoName: string) => {
+export const createRepo = async (newRepoName: string, params: any) => {
     let token;
     githubToken.subscribe(value => token = value)();
     let username;
     githubUsername.subscribe(value => username = value)();
-    
+
     if (newRepoName && token) {
         octokit = new Octokit({
             auth: token,
@@ -77,8 +78,8 @@ export const createRepo = async (newRepoName: string) => {
             });
             console.log("Repository created successfully:", response.data);
 
-            // Upload contents of the app-template/dist/ directory
-            await uploadDirectory(newRepoName);
+            // Inject values and upload contents of the app-template/dist/ directory
+            await injectValuesAndUpload(newRepoName, params);
             await deployAsGithubPage(octokit, username, newRepoName);
         } catch (error) {
             console.error("Error creating repository or uploading files:", error);
@@ -138,13 +139,44 @@ export const deployAsGithubPage = async (
     }
 };
 
-const uploadDirectory = async (repo: string) => {
+const injectValuesAndUpload = async (repo: string, values: { address: string, parties: any[] }) => {
     let token;
     githubToken.subscribe(value => token = value)();
     let username;
     githubUsername.subscribe(value => username = value)();
 
+    // Modify index.html content in fileContent
+    const configDataScript = `
+        <script type="application/json" id="configData">
+            {
+                "address": "${values.address}",
+                "parties": ${JSON.stringify(values.parties)}
+            }
+        </script>
+    `;
+
+    for (let file of fileContent) {
+        if (file.path === 'index.html') {
+            const indexHtmlContent = Buffer.from(file.content, 'base64').toString('utf8');
+            const modifiedContent = indexHtmlContent.replace(
+                '<script type="application/json" id="configData"></script>',
+                configDataScript
+            );
+            file.content = Buffer.from(modifiedContent, 'utf8').toString('base64');
+            break;
+        }
+    }
+
+    // Proceed to upload the directory
     const uploadFile = async (file) => {
+        let contentEncoding = 'utf8';
+        const fileExtension = file.path.split('.').pop().toLowerCase();
+
+        // Handle binary files
+        if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'pdf', 'mp4', 'mp3', 'wav'].includes(fileExtension)) {
+            contentEncoding = 'base64';
+        }
+
         try {
             await octokit.request(
                 "PUT /repos/{owner}/{repo}/contents/{path}",
@@ -154,6 +186,7 @@ const uploadDirectory = async (repo: string) => {
                     path: file.path,
                     message: `Upload ${file.path}`,
                     content: file.content,
+                    encoding: contentEncoding,
                     headers: {
                         "X-GitHub-Api-Version": "2022-11-28",
                     },
@@ -170,6 +203,6 @@ const uploadDirectory = async (repo: string) => {
     }
 };
 
-export const createFile = async (newRepoName: string) => {
-    await uploadDirectory(newRepoName);
+export const createFile = async (newRepoName: string, params: any) => {
+    await injectValuesAndUpload(newRepoName, params);
 };

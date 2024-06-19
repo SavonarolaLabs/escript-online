@@ -5,8 +5,8 @@ const directoryPath = path.join(__dirname, 'app-template/dist');
 const outputFilePath = path.join(__dirname, 'fileContent.json');
 
 const getFileContent = (filePath) => {
-  const content = fs.readFileSync(filePath, 'utf8');
-  return Buffer.from(content).toString('base64');
+  const content = fs.readFileSync(filePath);
+  return content.toString('base64');
 };
 
 const walkDirectory = (dir) => {

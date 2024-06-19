@@ -7,5 +7,8 @@ export default defineConfig({
 	plugins: [
 		sveltekit(), 
 		wasm(),
-		topLevelAwait()]
+		topLevelAwait()],
+	optimizeDeps: {
+		include: ['buffer'],
+	},
 });

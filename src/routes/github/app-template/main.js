@@ -1,14 +1,10 @@
 import { connectWallet, deposit } from './wallet.js';
 
 document.addEventListener("DOMContentLoaded", async () => {
-	const address = "7W3rNasJySb7cWbBiuoEAxym6wHSRukwRHex2P2Lgp1SQMTM2joSgRGK25fnXYArm533zmgtYupVWfDUY5RXjFDcPXzm3YJg25vbVM2QpSrhaXzXt5ZtwNntU2h19YgLYuBu4wy2yY3ibAVHg24jbqfTfV8vQTCy7p2N9zvfSUVujHe5qXWMHNmhGUskYSwFrKdbhHXrKuuD1EpcRAs6iaAz7A93LRfJuq6B31vWBM7HodyTpARhJzwT99ko5Rs3SQsEBKSuhifhSrpaSGbzAR7Z7F5E39Qee4vsgvjd3qiPzqe36bTU1xvtraDvWAjFMjj5ZfJLJgTuMEsekDuhssKVCFVuWVa6APunBeAbaTWSNqiGoYzDevJ8ZTsHWwrxD9S2NzumU6wiEPzgvbYPTbA3hqK15t1aq4P2P9UPYwNJp7w";
-	const parties = [
-		{ address: "9g2hgnrfmsRjruxdyhD96UfWnQB4NmqmiovVPVETy4AHeTPpBkW", name: "pkAlice" },
-		{ address: "9g2hgnrfmsRjruxdyhD96UfWnQB4NmqmiovVPVETy4AHeTPpBkW", name: "pkBob" },
-		{ address: "9g2hgnrfmsRjruxdyhD96UfWnQB4NmqmiovVPVETy4AHeTPpBkW", name: "pkCharlie" },
-		{ address: "9g2hgnrfmsRjruxdyhD96UfWnQB4NmqmiovVPVETy4AHeTPpBkW", name: "pkDick" },
-		{ address: "9g2hgnrfmsRjruxdyhD96UfWnQB4NmqmiovVPVETy4AHeTPpBkW", name: "pkEma" },
-	];
+    const configDataElement = document.getElementById('configData');
+    const config = JSON.parse(configDataElement.textContent);
+    const address = config.address;
+    const parties = config.parties;
 
 	document.getElementById('contract-address').textContent = address;
 	// @ts-ignore
