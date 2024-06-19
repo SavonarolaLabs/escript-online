@@ -5,13 +5,12 @@
 		login,
 		logout,
 		createRepo,
-		createFile,
-		deployAsGithubPage,
 		fetchGitHubUsername,
 		githubToken,
 		githubUsername,
 	} from "./firebaseUtils";
 	import { getAuth } from "firebase/auth";
+	import { showToast } from "$lib/toaster";
 	let newRepoName = "test-repo";
 
 	export let params = {
@@ -66,11 +65,14 @@
 		});
 	});
 
-	async function deployPages() {
-		let username;
-		githubUsername.subscribe((value) => (username = value))();
-		await deployAsGithubPage(octokit, username, newRepoName);
+	async function clickCreateRepo() {
+		if($user){
+			createRepo(newRepoName, params)
+		}else{
+			showToast('Please connect a Github account.','error')
+		}
 	}
+
 </script>
 
 <div class="flex gap-4 items-center">
@@ -83,8 +85,8 @@
 		<button
 			class="btn-secondary"
 			style="border-top-left-radius:0;border-bottom-left-radius:0;"
-			on:click={() => createRepo(newRepoName, params)}
-			>Create Repository</button
+			on:click={clickCreateRepo}
+			>Create App</button
 		>
 	</div>
 	<a
@@ -106,12 +108,12 @@
 	>
 </div>
 
-<div class="flex gap-4 items-center pr-2">
+<div class="flex gap-4 items-center mr-6">
 	{#if $user}
 		<p>{$user.email}</p>
-		<button on:click={logout}>Logout</button>
+		<button class="btn-secondary" on:click={logout}>Logout</button>
 	{:else}
-		<button on:click={login}>Login with GitHub</button>
+		<button class="btn" on:click={login}>Login with GitHub</button>
 	{/if}
 </div>
 
