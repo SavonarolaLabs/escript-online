@@ -140,7 +140,7 @@ export const deployAsGithubPage = async (
 			}
 		);
 		console.log("GitHub Pages deployed from main branch:", response.data);
-		showToast("GitHub Pages deployed from main branch", "success");
+		showToast("GitHub Pages deployed. Please wait a minute for Github to react...", "loading");
 	} catch (error) {
 		console.error("Error deploying GitHub Pages:", error);
 		showToast("Error deploying GitHub Pages", "error");

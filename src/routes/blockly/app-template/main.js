@@ -11,7 +11,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 	document.getElementById("explorerLink").href = "https://explorer.ergoplatform.com/en/addresses/" + address;
 	document.getElementById("connectWallet").addEventListener("click", connectWallet);
 
-	document.getElementById("depositBtn").addEventListener("click", ()=>deposit(address,parties.map(p =>p.address)));
+	document.getElementById("depositBtn").addEventListener("click", () => {
+        const updatedParties = Array.from(document.querySelectorAll('.address-input')).map(input => input.value.trim());
+        deposit(address, updatedParties);
+    });
 
 
 	const partiesContainer = document.getElementById('parties-container');

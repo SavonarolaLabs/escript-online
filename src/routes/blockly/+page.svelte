@@ -76,11 +76,26 @@
         try {
             contractAddress = compileContract(contract, selectedNetwork, selectedVersion, selectedIncludeSize);
             compileErrorMessage = "";
+			addressAndUsers.address = contractAddress;
+			addressAndUsers.parties = extractNames(contract).map(a => ({
+				address: "",
+				name: a,
+			}));
         } catch (e) {
             contractAddress = "";
             //compileErrorMessage = e.message;
         }
     }
+
+	function extractNames(contract:string) {
+    const namePattern = /^\s*val\s+(\w+)\s*=/gm;
+    const names = [];
+    let match;
+    while ((match = namePattern.exec(contract)) !== null) {
+        names.push(match[1]);
+    }
+    return names;
+}
 
 
 	let copyContractConfirmation = false;
@@ -94,6 +109,16 @@
 		}
 		navigator.clipboard.writeText(contractAddress);
 	}
+
+	let addressAndUsers = {
+		address: "",
+		parties: [
+			{
+				address: "",
+				name: "Alice",
+			},
+		],
+	};
 </script>
 
 <div class="h-vh">
@@ -102,7 +127,7 @@
 			<img src="logo.png" alt="" class="ml-4" style="width:30px;" />
 			<div class=" text-2xl font-bold p-4 pl-2">Multisig Editor</div>
 		</div>
-		<Github></Github>
+		<Github params={addressAndUsers}></Github>
 	</div>
 	<div
 		class="h-vh w-full flex flex-col justify-center items-center"
