@@ -15,6 +15,7 @@
 
 	import { Address, ErgoTree } from "ergo-lib-wasm-browser";
 	import Blockly from "./Blockly.svelte";
+	import Github from "./Github.svelte";
 
 	let editorContainer: HTMLDivElement;
 	let editor: monaco.editor.IStandaloneCodeEditor;
@@ -101,7 +102,7 @@
 			<img src="logo.png" alt="" class="ml-4" style="width:30px;" />
 			<div class=" text-2xl font-bold p-4 pl-2">Multisig Editor</div>
 		</div>
-		<div class="flex gap-4 items-center pr-2"></div>
+		<Github></Github>
 	</div>
 	<div
 		class="h-vh w-full flex flex-col justify-center items-center"
