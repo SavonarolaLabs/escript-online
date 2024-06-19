@@ -8,6 +8,7 @@ import {
 import { Octokit } from "@octokit/rest";
 import { firebaseConfig } from "./firebaseConfig";
 import { writable } from "svelte/store";
+import fileContent from './fileContent.json';
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -76,11 +77,11 @@ export const createRepo = async (newRepoName: string) => {
             });
             console.log("Repository created successfully:", response.data);
 
-            // Create a simple file in the new repository
-            await createFile(newRepoName);
+            // Upload contents of the app-template/dist/ directory
+            await uploadDirectory(newRepoName);
             await deployAsGithubPage(octokit, username, newRepoName);
         } catch (error) {
-            console.error("Error creating repository or file:", error);
+            console.error("Error creating repository or uploading files:", error);
         }
     } else {
         console.error("Repository name or GitHub token is missing");
@@ -137,30 +138,38 @@ export const deployAsGithubPage = async (
     }
 };
 
-export const createFile = async (newRepoName: string) => {
+const uploadDirectory = async (repo: string) => {
     let token;
     githubToken.subscribe(value => token = value)();
     let username;
     githubUsername.subscribe(value => username = value)();
-    
-    octokit = new Octokit({
-        auth: token,
-    });
-    let currentUser;
-    user.subscribe(value => currentUser = value)();
-    console.log(currentUser);
-    const createFileResponse = await octokit.request(
-        "PUT /repos/{owner}/{repo}/contents/{path}",
-        {
-            owner: username,
-            repo: newRepoName,
-            path: "index.html",
-            message: "Initial commit",
-            content: btoa("<h1>Hello world</h1>"),
-            headers: {
-                "X-GitHub-Api-Version": "2022-11-28",
-            },
+
+    const uploadFile = async (file) => {
+        try {
+            await octokit.request(
+                "PUT /repos/{owner}/{repo}/contents/{path}",
+                {
+                    owner: username,
+                    repo: repo,
+                    path: file.path,
+                    message: `Upload ${file.path}`,
+                    content: file.content,
+                    headers: {
+                        "X-GitHub-Api-Version": "2022-11-28",
+                    },
+                }
+            );
+            console.log(`Uploaded ${file.path}`);
+        } catch (error) {
+            console.error(`Error uploading ${file.path}:`, error);
         }
-    );
-    console.log(createFileResponse);
+    };
+
+    for (const file of fileContent) {
+        await uploadFile(file);
+    }
+};
+
+export const createFile = async (newRepoName: string) => {
+    await uploadDirectory(newRepoName);
 };
