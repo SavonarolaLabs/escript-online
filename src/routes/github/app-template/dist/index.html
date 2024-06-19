@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LIONGUARD</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="nav">
+        <div class="text-4xl">LIONGUARD</div>
+        <div class="flex items-center gap-10">
+            <div>Dev Support</div>
+            <div>KYA</div>
+            <a id="explorerLink" href="https://explorer.ergoplatform.com/en/"> Explorer </a>
+            <button id="connectWallet" class="btn-secondary connect" style="width:152px;">Connect Wallet</button>
+            <button id="disconnectWallet" class="btn-secondary connect" style="width:152px;display:none;">Disconnect</button>
+        </div>
+    </div>
+    <div class="top-section">
+        <div class="py-2">
+            <img class="main-img" src="lionguard.webp" alt="" />
+        </div>
+        <div>
+            <div>SMART CONTRACT::</div>
+            <div class="address" id="contract-address"></div>
+        </div>
+    </div>
+    <div class="flex flex-col gap-2 p-2 overflow-y-scroll" id="parties-container"></div>
+    <div class="footer">
+        <div class="flex gap-5" style="color:var(--color-light-gray);">
+            <div>
+                Status: <span id="status" class="text-cyan" style="display:none;width:51px;">READY</span>
+                <span id="statusNotReady" style="text-align: center;display:inline-block;width:51px;">-</span>
+            </div>
+            <div id="addresses-set"></div>
+        </div>
+        <div class="flex">
+            <input id="nanoErgInput" class="flex rounded-sm p-3 gap-5 pl-6" value="10000" style="border-top-left-radius: 20px;" />
+            <div>
+                <button id="depositBtn" class="px-12 py-6 cyan-bg text-black rounded-sm font-bold"
+                        style="border-top-left-radius: 0; border-bottom-left-radius: 0; border-bottom-right-radius:10px">
+                    DEPOSIT
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="./bundle.js"></script>
+</body>
+</html>
