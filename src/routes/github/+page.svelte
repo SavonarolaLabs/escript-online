@@ -97,9 +97,3 @@
 	href={`https://${$githubUsername}.github.io/${newRepoName}/`}
 	>{newRepoName} pages</a
 >
-
-<style>
-	.hidden {
-		display: none;
-	}
-</style>

@@ -403,6 +403,12 @@
             <div class=" text-2xl font-bold p-4 pl-2">ErgoScript</div>
                 <Switch></Switch>
         </div>
+        <a class="ml-8 relative inline-block" href="/blockly">
+            <span class="font-bold">Blockly</span>
+            <span class="absolute top-0 right-0 -mt-2 -mr-11 px-2 py-1 text-xs font-bold text-white bg-green-500 rounded-full">beta</span>
+          </a>
+          
+
         <div class="flex gap-4 items-center pr-2">
             {#if lobbyLink}
                 <div class="flex">
@@ -696,3 +702,92 @@
         {/if}
     </div>
 </div>
+
+
+<style>
+	svg.octicon > path {
+		fill: #bdbdbd;
+	}
+
+	.copy-btn {
+		border: 1px solid rgb(185, 185, 185);
+		border-left: none;
+		border-top-right-radius: 8px;
+		border-bottom-right-radius: 8px;
+	}
+	input {
+		background: rgba(0, 0, 0, 0.436);
+		border: 1px solid rgb(185, 185, 185);
+		border-top-left-radius: 8px;
+		border-bottom-left-radius: 8px;
+		padding-left: 8px;
+		padding-top: 5px;
+		padding-bottom: 5px;
+		color: #bdbdbd;
+	}
+	.input-monospace {
+		font-family:
+			ui-monospace,
+			SFMono-Regular,
+			SF Mono,
+			Menlo,
+			Consolas,
+			Liberation Mono,
+			monospace;
+	}
+	select:focus,
+	input:focus {
+		outline: none;
+	}
+	select {
+		background: url("data:image/svg+xml;utf8, <svg width='16' height='16' viewBox='0 0 330 330' xmlns='http://www.w3.org/2000/svg'><g><path fill='%23bdbdbd' d='m325.61 229.39-150-150c-2.812-2.813-6.628-4.393-10.606-4.393-3.979 0-7.794 1.581-10.607 4.394l-150 150c-5.858 5.858-5.858 15.355 0 21.213 5.857 5.857 15.355 5.858 21.213 0l139.39-139.39 139.4 139.39c2.929 2.929 6.768 4.393 10.607 4.393s7.678-1.464 10.607-4.394c5.857-5.858 5.857-15.355-1e-3 -21.213z'/></g></svg>")
+			no-repeat;
+		background-position: 85% 50%;
+		padding-right: 44px;
+		padding-left: 18px;
+		background-color: #1e1e1e;
+		align-items: center;
+		appearance: button;
+		border-radius: 8px;
+		border-style: none;
+		box-shadow: rgba(255, 255, 255, 0.26) 0 1px 2px inset;
+		border: 1px solid rgb(185, 185, 185);
+		box-sizing: border-box;
+		color: #bdbdbd;
+		cursor: pointer;
+		display: flex;
+		flex-direction: row;
+		flex-shrink: 0;
+		font-family: "RM Neue", sans-serif;
+		font-size: 100%;
+		line-height: 1.15;
+		margin: 0;
+		text-align: center;
+		text-transform: none;
+		transition:
+			color 0.13s ease-in-out,
+			background 0.13s ease-in-out,
+			opacity 0.13s ease-in-out,
+			box-shadow 0.13s ease-in-out;
+		user-select: none;
+		-webkit-user-select: none;
+		touch-action: manipulation;
+	}
+
+
+	.h-vh {
+		height: 100vh;
+	}
+	.navbar {
+		background-color: #1e1e1e;
+		border-bottom: 1px solid #fff3;
+	}
+	.footer {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		background-color: #1e1e1e;
+		border-top: 1px solid #fff3;
+	}
+</style>
